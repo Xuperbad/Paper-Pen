@@ -1,6 +1,26 @@
-# Paper-Pen 文档站
+# Paper-Pen
 
 基于 [Docusaurus](https://docusaurus.io/) 构建的现代化文档网站，支持 Markdown 编写、自动部署和多种功能扩展。
+
+## 📝 日常开发流程
+
+**推荐的开发流程（无需本地构建）：**
+
+```bash
+# 1. 启动开发服务器（只需要做一次）
+npm start
+
+# 2. 编辑文件（在编辑器中修改 .md 文件）
+# 浏览器会自动刷新显示更改
+
+# 3. 满意后提交推送
+git add .
+git commit -m "docs: 更新文档内容"
+git push origin main
+
+# 4. GitHub Actions 自动构建和部署
+# 等待 2-3 分钟后查看线上效果
+```
 
 ## 🌐 在线访问
 
@@ -56,6 +76,11 @@ yarn start
 ```
 
 开发服务器启动后会自动打开浏览器，访问 http://localhost:3000
+
+**什么时候需要本地构建？**
+- ✅ 想要测试生产环境的构建结果
+- ✅ 检查是否有构建错误
+- ✅ 验证所有链接是否正常
 
 ### 构建和部署
 
@@ -278,8 +303,23 @@ git push origin main
 - 部署到 GitHub Pages
 - 通常 2-3 分钟后网站更新
 
+**重要说明：**
+- 🔥 **本地开发时不需要运行 `npm run build`**
+- 🚀 **只需要 `npm start` 启动开发服务器**
+- 📝 **修改文件后直接 git push，GitHub Actions 会自动构建**
+- ⚡ **开发服务器有热重载，修改即时生效**
+
 ### 协作工作流
 
+**简单流程（直接推送到 main）：**
+1. **拉取最新代码**: `git pull origin main`
+2. **启动开发服务器**: `npm start`
+3. **修改内容**: 编辑 Markdown 文件，浏览器实时预览
+4. **提交更改**: `git add . && git commit -m "描述"`
+5. **推送到远程**: `git push origin main`
+6. **等待自动部署**: GitHub Actions 自动构建并部署
+
+**团队协作流程（使用分支）：**
 1. **拉取最新代码**: `git pull origin main`
 2. **创建功能分支**: `git checkout -b feature/new-content`
 3. **开发和测试**: 本地修改并测试
