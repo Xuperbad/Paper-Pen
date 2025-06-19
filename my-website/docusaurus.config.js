@@ -10,7 +10,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Paper-Pen 文档站',
+  title: 'Paper-Pen',
   tagline: '学习 Docusaurus 的最佳实践',
   favicon: 'img/favicon.ico',
 
