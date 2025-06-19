@@ -1,0 +1,8 @@
+{
+  "label": "教程及示例",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "功能教程和书籍示例。"
+  }
+}

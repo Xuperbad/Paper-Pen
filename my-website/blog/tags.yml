@@ -1,3 +1,18 @@
+docusaurus:
+  label: Docusaurus
+  permalink: /docusaurus
+  description: Docusaurus 相关内容
+
+文档:
+  label: 文档
+  permalink: /docs
+  description: 文档相关内容
+
+教程:
+  label: 教程
+  permalink: /tutorial
+  description: 教程相关内容
+
 facebook:
   label: Facebook
   permalink: /facebook
@@ -7,11 +22,6 @@ hello:
   label: Hello
   permalink: /hello
   description: Hello tag description
-
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
 
 hola:
   label: Hola

@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Paper-Pen',
-  tagline: '学习 Docusaurus 的最佳实践',
+  tagline: '纸和笔',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -91,14 +91,16 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Books',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
-          {
-            href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
-            position: 'right',
-          },
+          //暂时关闭Blog和Showcase功能
+          //{to: '/blog', label: 'Blog', position: 'left'},
+          // {to: '/showcase', label: 'Showcase', position: 'left'},
+          // {
+          //   href: 'https://github.com/Xuperbad/Paper-Pen',
+          //   label: 'GitHub',
+          //   position: 'right',
+          // },
         ],
       },
       footer: {
@@ -108,7 +110,7 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
+                label: 'Books',
                 to: '/docs/intro',
               },
             ],

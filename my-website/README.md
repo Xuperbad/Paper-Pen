@@ -230,6 +230,23 @@ navbar: {
 }
 ```
 
+### category.json 可配置项
+
+{
+  "label": "分类名称",           // 必需：侧边栏显示的名称
+  "position": 1,              // 可选：排序位置
+  "collapsed": false,         // 可选：是否默认折叠
+  "collapsible": true,        // 可选：是否可折叠
+  "className": "custom-class", // 可选：自定义CSS类
+  "link": {
+    "type": "generated-index",
+    "title": "自定义标题",      // 可选：页面标题
+    "description": "描述文本", // 可选：页面描述
+    "keywords": ["关键词"],    // 可选：SEO关键词
+    "image": "/img/cover.jpg"  // 可选：社交分享图片
+  }
+}
+
 ## 🔄 多人协作开发
 
 ### 在其他电脑上开发
