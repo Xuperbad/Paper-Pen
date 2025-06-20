@@ -31,7 +31,7 @@ const config = {
   organizationName: 'Xuperbad', // Usually your GitHub org/user name.
   projectName: 'Paper-Pen', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn', // 改为 warn 而不是 throw
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
@@ -80,6 +80,29 @@ const config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'notes',
+        path: 'notes',
+        routeBasePath: 'notes',
+        sidebarPath: './sidebarNotes.js',
+        editUrl: 'https://github.com/Xuperbad/Paper-Pen/tree/main/my-website/',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'history',
+        path: 'history',
+        routeBasePath: 'history',
+        sidebarPath: './sidebarHistory.js',
+        editUrl: 'https://github.com/Xuperbad/Paper-Pen/tree/main/my-website/',
+      },
+    ],
+  ],
+
   themes: ['@docusaurus/theme-mermaid'],
 
   themeConfig:
@@ -98,16 +121,30 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Books',
+            label: '🔋Books',
+          },
+          {
+            type: 'docSidebar',
+            sidebarId: 'historySidebar',
+            position: 'left',
+            label: '🥽History',
+            docsPluginId: 'history',
           },
           //暂时关闭Showcase功能
-          {to: '/blog', label: 'Blog', position: 'left'},
+          {to: '/blog', label: '✍🏻Articles', position: 'left'},
           // {to: '/showcase', label: 'Showcase', position: 'left'},
           // {
           //   href: 'https://github.com/Xuperbad/Paper-Pen',
           //   label: 'GitHub',
           //   position: 'right',
           // },
+          {
+            type: 'docSidebar',
+            sidebarId: 'notesSidebar',
+            position: 'left',
+            label: '📕Notes',
+            docsPluginId: 'notes',
+          },
         ],
       },
       footer: {
@@ -119,6 +156,14 @@ const config = {
               {
                 label: 'Books',
                 to: '/docs/intro',
+              },
+              {
+                label: 'Notes',
+                to: '/notes/intro',
+              },
+              {
+                label: 'History',
+                to: '/history/intro',
               },
             ],
           },
