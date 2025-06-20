@@ -57,6 +57,8 @@ const config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          remarkPlugins: [require('remark-math')],
+          rehypePlugins: [require('rehype-katex')],
         },
         blog: {
           showReadingTime: true,
@@ -89,6 +91,8 @@ const config = {
         routeBasePath: 'notes',
         sidebarPath: './sidebarNotes.js',
         editUrl: 'https://github.com/Xuperbad/Paper-Pen/tree/main/my-website/',
+        remarkPlugins: [require('remark-math')],
+        rehypePlugins: [require('rehype-katex')],
       },
     ],
     [
@@ -99,11 +103,27 @@ const config = {
         routeBasePath: 'history',
         sidebarPath: './sidebarHistory.js',
         editUrl: 'https://github.com/Xuperbad/Paper-Pen/tree/main/my-website/',
+        remarkPlugins: [require('remark-math')],
+        rehypePlugins: [require('rehype-katex')],
       },
     ],
   ],
 
   themes: ['@docusaurus/theme-mermaid'],
+
+  markdown: {
+    mermaid: true,
+  },
+
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+      crossorigin: 'anonymous',
+    },
+  ],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
