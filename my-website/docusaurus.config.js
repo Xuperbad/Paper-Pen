@@ -99,7 +99,7 @@ const config = {
             position: 'left',
             label: 'Books',
           },
-          //暂时关闭Blog和Showcase功能
+          //暂时关闭Showcase功能
           {to: '/blog', label: 'Blog', position: 'left'},
           // {to: '/showcase', label: 'Showcase', position: 'left'},
           // {
