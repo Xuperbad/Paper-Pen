@@ -27,3 +27,13 @@ hello:
   label: 乡村振兴
   permalink: /乡村振兴
   description: 乡村振兴相关内容
+
+科技创新:
+  label: 科技创新
+  permalink: /科技创新
+  description: 科技创新相关内容
+
+三农问题:
+  label: 三农问题
+  permalink: /三农问题
+  description: 三农问题相关内容
