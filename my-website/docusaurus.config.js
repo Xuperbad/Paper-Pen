@@ -62,6 +62,8 @@ const config = {
         },
         blog: {
           showReadingTime: true,
+          blogSidebarTitle: '所有文章',
+          blogSidebarCount: 'ALL', // 显示所有文章而不是默认的5篇
           feedOptions: {
             type: ['rss', 'atom'],
             xslt: true,
@@ -111,10 +113,6 @@ const config = {
 
   themes: ['@docusaurus/theme-mermaid'],
 
-  markdown: {
-    mermaid: true,
-  },
-
   stylesheets: [
     {
       href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
@@ -130,6 +128,11 @@ const config = {
     ({
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
+      blog: {
+        sidebar: {
+          groupByYear: false, // 关闭按年分组
+        },
+      },
       navbar: {
         title: 'Paper-Pen',
         logo: {
