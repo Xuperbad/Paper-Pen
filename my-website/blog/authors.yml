@@ -7,7 +7,7 @@ admin:
   socials:
     github: Xuperbad
 
-yangshun:
+示例1:
   name: Yangshun Tay
   title: Ex-Meta Staff Engineer, Co-founder GreatFrontEnd
   url: https://linkedin.com/in/yangshun
@@ -19,7 +19,7 @@ yangshun:
     github: yangshun
     newsletter: https://www.greatfrontend.com
 
-slorber:
+示例2:
   name: Sébastien Lorber
   title: Docusaurus maintainer
   url: https://sebastienlorber.com

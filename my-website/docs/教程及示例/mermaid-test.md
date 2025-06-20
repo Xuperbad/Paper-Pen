@@ -1,5 +1,5 @@
 ---
-sidebar_position: 999
+sidebar_position: 1
 ---
 
 # Mermaid 图表测试

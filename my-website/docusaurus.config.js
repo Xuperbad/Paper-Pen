@@ -100,7 +100,7 @@ const config = {
             label: 'Books',
           },
           //暂时关闭Blog和Showcase功能
-          //{to: '/blog', label: 'Blog', position: 'left'},
+          {to: '/blog', label: 'Blog', position: 'left'},
           // {to: '/showcase', label: 'Showcase', position: 'left'},
           // {
           //   href: 'https://github.com/Xuperbad/Paper-Pen',

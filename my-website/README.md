@@ -12,6 +12,11 @@ npm start
 
 # 2. 编辑文件（在编辑器中修改 .md 文件）
 # 浏览器会自动刷新显示更改
+# 如果更改较大，容易出现报错，可以尝试构建生产版本
+npm start          # 启动开发服务器
+npm run build      # 构建生产版本
+npm run serve      # 预览构建结果
+npm run clear      # 清理缓存
 
 # 3. 满意后提交推送
 git add .

@@ -23,7 +23,7 @@ hello:
   permalink: /hello
   description: Hello tag description
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+乡村振兴:
+  label: 乡村振兴
+  permalink: /乡村振兴
+  description: 乡村振兴相关内容
