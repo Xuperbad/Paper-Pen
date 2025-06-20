@@ -107,12 +107,13 @@ sidebar_position: 1
    4. [霞鹜文楷](https://github.com/lxgw/LxgwWenKai?tab=readme-ov-file)
 3. 文档
    1. [2048RPG_Report](./报告/2048RPG_Report.md)
-   2. [扫雷RPG_Report](./报告/扫雷RPG_Report.md)
-   3. [老式电话RPG_Report](./报告/老式电话RPG_Report.md)
-   4. [watch申论小记星_Report](./报告/watch申论小记星_Report.md)
-   5. [成语纸牌接龙_Report](./报告/成语纸牌接龙_Report.md)
-   6. [写好申论分析_Report](./报告/写好申论分析_Report.md)
-   7. [常见美术风格_Report](./报告/常见美术风格.md)
+   2. [2048RPG_Report_Gemini](./报告/2048RPG_Report_Gemini.md)
+   3. [扫雷RPG_Report](./报告/扫雷RPG_Report.md)
+   4. [老式电话RPG_Report](./报告/老式电话RPG_Report.md)
+   5. [watch申论小记星_Report](./报告/watch申论小记星_Report.md)
+   6. [成语纸牌接龙_Report](./报告/成语纸牌接龙_Report.md)
+   7. [写好申论分析_Report](./报告/写好申论分析_Report.md)
+   8. [常见美术风格_Report](./报告/常见美术风格.md)
 
 ## 暂存
 
