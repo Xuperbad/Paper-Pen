@@ -23,7 +23,8 @@ const config = {
   url: 'https://xuperbad.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/Paper-Pen/',
+  // For local development, use '/' instead of '/Paper-Pen/'
+  baseUrl: process.env.NODE_ENV === 'development' ? '/' : '/Paper-Pen/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
