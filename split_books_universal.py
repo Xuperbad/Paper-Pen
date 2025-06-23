@@ -19,28 +19,33 @@ def clean_image_references(content):
     包括：
     - ![logo](../Images/logo.png)
     - ![](../Images/img02.jpg)
-    - ![img00](../Images/img00.jpg)
-    - ![s1](../Images/s1.jpg)
-    - ![tt](../Images/tt.jpg)
+    - ![](../images/00036.jpeg)
+    - ![](docs/images/00036.jpeg)
+    - [[2]](part0006_split_003.html#m2)
     - [xxx](../Text/Section*.xhtml#xxx)
-    - [xxx](./Text/Section*.xhtml#xxx)
     等各种格式的图片引用和断开的链接
     """
     # 匹配各种图片引用格式
     image_patterns = [
-        r'!\[.*?\]\(\.\.\/Images\/.*?\)',  # ![xxx](../Images/xxx)
-        r'!\[\]\(\.\.\/Images\/.*?\)',     # ![](../Images/xxx)
-        r'!\[.*?\]\(Images\/.*?\)',        # ![xxx](Images/xxx)
-        r'!\[\]\(Images\/.*?\)',           # ![](Images/xxx)
-        r'!\[.*?\]\(\.\/Images\/.*?\)',    # ![xxx](./Images/xxx)
-        r'!\[\]\(\.\/Images\/.*?\)',       # ![](./Images/xxx)
+        r'!\[.*?\]\(\.\.\/[Ii]mages\/.*?\)',     # ![xxx](../Images/xxx) 或 ![xxx](../images/xxx)
+        r'!\[\]\(\.\.\/[Ii]mages\/.*?\)',       # ![](../Images/xxx) 或 ![](../images/xxx)
+        r'!\[.*?\]\([Ii]mages\/.*?\)',          # ![xxx](Images/xxx) 或 ![xxx](images/xxx)
+        r'!\[\]\([Ii]mages\/.*?\)',             # ![](Images/xxx) 或 ![](images/xxx)
+        r'!\[.*?\]\(\.\/[Ii]mages\/.*?\)',      # ![xxx](./Images/xxx) 或 ![xxx](./images/xxx)
+        r'!\[\]\(\.\/[Ii]mages\/.*?\)',         # ![](./Images/xxx) 或 ![](./images/xxx)
+        r'!\[.*?\]\(docs\/[Ii]mages\/.*?\)',    # ![xxx](docs/images/xxx)
+        r'!\[\]\(docs\/[Ii]mages\/.*?\)',       # ![](docs/images/xxx)
+        r'!\[.*?\]\([^)]*\.(?:jpg|jpeg|png|gif|bmp|webp|svg)\)',  # 任何图片文件扩展名
+        r'!\[\]\([^)]*\.(?:jpg|jpeg|png|gif|bmp|webp|svg)\)',    # 空alt的图片
     ]
 
     # 匹配断开的内部链接格式
     link_patterns = [
-        r'\[\[.*?\]\]\(\.\.\/Text\/.*?\.xhtml.*?\)',  # [[xxx]](../Text/xxx.xhtml)
-        r'\[.*?\]\(\.\.\/Text\/.*?\.xhtml.*?\)',      # [xxx](../Text/xxx.xhtml)
-        r'\[.*?\]\(\.\/Text\/.*?\.xhtml.*?\)',        # [xxx](./Text/xxx.xhtml)
+        r'\[\[(\d+)\]\]\([^)]*\.html[^)]*\)',           # [[2]](part0006_split_003.html#m2)
+        r'\[\[.*?\]\]\(\.\.\/Text\/.*?\.xhtml.*?\)',    # [[xxx]](../Text/xxx.xhtml)
+        r'\[.*?\]\(\.\.\/Text\/.*?\.xhtml.*?\)',        # [xxx](../Text/xxx.xhtml)
+        r'\[.*?\]\(\.\/Text\/.*?\.xhtml.*?\)',          # [xxx](./Text/xxx.xhtml)
+        r'\[.*?\]\(part\d+_split_\d+\.html[^)]*\)',     # [xxx](part0006_split_003.html#xxx)
     ]
 
     cleaned_content = content
@@ -49,9 +54,12 @@ def clean_image_references(content):
     for pattern in image_patterns:
         cleaned_content = re.sub(pattern, '', cleaned_content)
 
-    # 清理断开的内部链接，保留链接文本
-    for pattern in link_patterns:
-        # 提取链接文本并保留
+    # 清理断开的内部链接，保留链接文本或转换为简单格式
+    # 对于 [[数字]] 格式的引用，转换为 [数字]
+    cleaned_content = re.sub(r'\[\[(\d+)\]\]\([^)]*\.html[^)]*\)', r'[\1]', cleaned_content)
+
+    # 对于其他断开的链接，保留链接文本
+    for pattern in link_patterns[1:]:  # 跳过第一个已处理的模式
         def replace_link(match):
             link_text = re.search(r'\[([^\]]*)\]', match.group(0))
             if link_text:
@@ -61,6 +69,9 @@ def clean_image_references(content):
 
     # 清理多余的空行
     cleaned_content = re.sub(r'\n\s*\n\s*\n', '\n\n', cleaned_content)
+
+    # 清理行末的多余空格
+    cleaned_content = re.sub(r' +\n', '\n', cleaned_content)
 
     return cleaned_content
 

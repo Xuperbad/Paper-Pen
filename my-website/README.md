@@ -20,7 +20,7 @@ npm run clear      # 清理缓存
 
 # 3. 满意后提交推送
 git add .
-git commit -m "docs: 更新文档内容"
+git commit -m "docs: 日常更新"
 git push origin main
 
 # 4. GitHub Actions 自动构建和部署
