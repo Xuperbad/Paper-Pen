@@ -64,24 +64,24 @@ def clean_image_references(content):
 
     return cleaned_content
 
-def extract_chapters_chinese_history(content):
+def extract_chapters_dongfin_politics(content):
     """
-    提取中国通史的章节内容
+    提取东晋门阀政治的章节内容
     """
     chapters = []
-    
-    # 匹配章节标题的正则表达式
-    chapter_pattern = r'^## (第[一二三四五六七八九十\d]+章[^#\n]*)'
-    
+
+    # 匹配章节标题的正则表达式 - 匹配 # 开头的主要章节
+    chapter_pattern = r'^# ([^#\n]+)'
+
     # 分割内容
     lines = content.split('\n')
     current_chapter = None
     current_content = []
-    
+
     for line in lines:
         # 检查是否是章节标题
         chapter_match = re.match(chapter_pattern, line)
-        
+
         if chapter_match:
             # 保存上一章内容
             if current_chapter:
@@ -89,21 +89,63 @@ def extract_chapters_chinese_history(content):
                     'title': current_chapter,
                     'content': '\n'.join(current_content)
                 })
-            
+
             # 开始新章节
             current_chapter = chapter_match.group(1)
             current_content = [line]  # 包含章节标题
         else:
             if current_chapter:
                 current_content.append(line)
-    
+
     # 保存最后一章
     if current_chapter:
         chapters.append({
             'title': current_chapter,
             'content': '\n'.join(current_content)
         })
-    
+
+    return chapters
+
+def extract_chapters_structural_reform(content):
+    """
+    提取结构性改革的章节内容
+    """
+    chapters = []
+
+    # 匹配章节标题的正则表达式 - 匹配 # 第X章 格式
+    chapter_pattern = r'^# (第[一二三四五六七八九十\d]+章[^#\n]*)'
+
+    # 分割内容
+    lines = content.split('\n')
+    current_chapter = None
+    current_content = []
+
+    for line in lines:
+        # 检查是否是章节标题
+        chapter_match = re.match(chapter_pattern, line)
+
+        if chapter_match:
+            # 保存上一章内容
+            if current_chapter:
+                chapters.append({
+                    'title': current_chapter,
+                    'content': '\n'.join(current_content)
+                })
+
+            # 开始新章节
+            current_chapter = chapter_match.group(1)
+            current_content = [line]  # 包含章节标题
+        else:
+            if current_chapter:
+                current_content.append(line)
+
+    # 保存最后一章
+    if current_chapter:
+        chapters.append({
+            'title': current_chapter,
+            'content': '\n'.join(current_content)
+        })
+
     return chapters
 
 def extract_chapters_game_book(content):
@@ -251,8 +293,10 @@ def process_book(input_file, output_dir, book_type):
         return []
     
     # 根据书籍类型提取章节
-    if book_type == 'chinese_history':
-        chapters = extract_chapters_chinese_history(content)
+    if book_type == 'dongfin_politics':
+        chapters = extract_chapters_dongfin_politics(content)
+    elif book_type == 'structural_reform':
+        chapters = extract_chapters_structural_reform(content)
     elif book_type == 'game_book':
         chapters = extract_chapters_game_book(content)
     else:
@@ -286,14 +330,14 @@ def main():
     # 书籍配置
     books = [
         {
-            'input_file': Path("books/中国通史-吕思勉.md"),
-            'output_dir': Path("my-website/docs/中国通史"),
-            'book_type': 'chinese_history'
+            'input_file': Path("books/东晋门阀政治.md"),
+            'output_dir': Path("my-website/docs/东晋门阀政治"),
+            'book_type': 'dongfin_politics'
         },
         {
-            'input_file': Path("books/游戏改变世界：游戏化如何让现实变得更美好.md"),
-            'output_dir': Path("my-website/docs/游戏改变世界"),
-            'book_type': 'game_book'
+            'input_file': Path("books/结构性改革.md"),
+            'output_dir': Path("my-website/docs/结构性改革"),
+            'book_type': 'structural_reform'
         }
     ]
     
