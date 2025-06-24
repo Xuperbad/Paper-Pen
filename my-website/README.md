@@ -193,17 +193,36 @@ yarn serve
 console.log('Hello World');
 ```
 
-:::tip 提示
-这是一个提示框
+:::note
+
+Some **content** with _Markdown_ `syntax`. Check [this `api`](#).
+
 :::
 
-:::warning 警告
-这是一个警告框
+:::tip
+
+Some **content** with _Markdown_ `syntax`. Check [this `api`](#).
+
 :::
 
-:::danger 危险
-这是一个危险提示框
+:::info
+
+Some **content** with _Markdown_ `syntax`. Check [this `api`](#).
+
 :::
+
+:::warning
+
+Some **content** with _Markdown_ `syntax`. Check [this `api`](#).
+
+:::
+
+:::danger
+
+Some **content** with _Markdown_ `syntax`. Check [this `api`](#).
+
+:::
+
 ```
 
 ## 🎨 自定义配置

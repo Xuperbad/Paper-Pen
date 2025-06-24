@@ -201,6 +201,132 @@ def extract_chapters_game_book(content):
 
     return chapters
 
+def extract_chapters_deliberate_practice(content):
+    """
+    提取刻意练习的章节内容
+    """
+    chapters = []
+
+    # 匹配章节标题的正则表达式 - 匹配 # 第X章 格式
+    chapter_pattern = r'^# (第\d+章[^#\n]*)'
+
+    # 分割内容
+    lines = content.split('\n')
+    current_chapter = None
+    current_content = []
+
+    for line in lines:
+        # 检查是否是章节标题
+        chapter_match = re.match(chapter_pattern, line)
+
+        if chapter_match:
+            # 保存上一章内容
+            if current_chapter:
+                chapters.append({
+                    'title': current_chapter,
+                    'content': '\n'.join(current_content)
+                })
+
+            # 开始新章节
+            current_chapter = chapter_match.group(1)
+            current_content = [line]  # 包含章节标题
+        else:
+            if current_chapter:
+                current_content.append(line)
+
+    # 保存最后一章
+    if current_chapter:
+        chapters.append({
+            'title': current_chapter,
+            'content': '\n'.join(current_content)
+        })
+
+    return chapters
+
+def extract_chapters_qing_yu_nian(content):
+    """
+    提取庆余年的章节内容
+    """
+    chapters = []
+
+    # 匹配章节标题的正则表达式 - 匹配 ## 第X章 格式
+    chapter_pattern = r'^## (第.*?章[^#\n]*)'
+
+    # 分割内容
+    lines = content.split('\n')
+    current_chapter = None
+    current_content = []
+
+    for line in lines:
+        # 检查是否是章节标题
+        chapter_match = re.match(chapter_pattern, line)
+
+        if chapter_match:
+            # 保存上一章内容
+            if current_chapter:
+                chapters.append({
+                    'title': current_chapter,
+                    'content': '\n'.join(current_content)
+                })
+
+            # 开始新章节
+            current_chapter = chapter_match.group(1)
+            current_content = [line]  # 包含章节标题
+        else:
+            if current_chapter:
+                current_content.append(line)
+
+    # 保存最后一章
+    if current_chapter:
+        chapters.append({
+            'title': current_chapter,
+            'content': '\n'.join(current_content)
+        })
+
+    return chapters
+
+def extract_chapters_qing_yu_nian(content):
+    """
+    提取庆余年的章节内容
+    """
+    chapters = []
+
+    # 匹配章节标题的正则表达式 - 匹配 ## 第X章 格式
+    chapter_pattern = r'^## (第.*?章[^#\n]*)'
+
+    # 分割内容
+    lines = content.split('\n')
+    current_chapter = None
+    current_content = []
+
+    for line in lines:
+        # 检查是否是章节标题
+        chapter_match = re.match(chapter_pattern, line)
+
+        if chapter_match:
+            # 保存上一章内容
+            if current_chapter:
+                chapters.append({
+                    'title': current_chapter,
+                    'content': '\n'.join(current_content)
+                })
+
+            # 开始新章节
+            current_chapter = chapter_match.group(1)
+            current_content = [line]  # 包含章节标题
+        else:
+            if current_chapter:
+                current_content.append(line)
+
+    # 保存最后一章
+    if current_chapter:
+        chapters.append({
+            'title': current_chapter,
+            'content': '\n'.join(current_content)
+        })
+
+    return chapters
+
 def generate_sidebar_position_chinese(chapter_num):
     """
     根据中文章节号生成侧边栏位置
@@ -242,27 +368,30 @@ def generate_sidebar_position_arabic(chapter_num):
     
     return 1
 
-def create_chapter_file(chapter, output_dir, book_type):
+def create_chapter_file(chapter, output_dir, book_type, chapter_index=None):
     """
     创建章节文件
     """
     title = chapter['title']
     content = chapter['content']
-    
+
     # 清理图片引用
     cleaned_content = clean_image_references(content)
-    
+
     # 生成文件名（移除特殊字符）
     filename = re.sub(r'[^\w\s-]', '', title).strip()
     filename = re.sub(r'[-\s]+', '-', filename)
     filename = f"{filename}.md"
-    
+
     # 生成侧边栏位置
-    if book_type == 'chinese_history':
+    if chapter_index is not None:
+        # 如果提供了章节索引，直接使用（从1开始）
+        sidebar_position = chapter_index + 1
+    elif book_type == 'chinese_history':
         sidebar_position = generate_sidebar_position_chinese(title)
     else:
         sidebar_position = generate_sidebar_position_arabic(title)
-    
+
     # 添加 frontmatter
     frontmatter = f"""---
 sidebar_position: {sidebar_position}
@@ -310,6 +439,10 @@ def process_book(input_file, output_dir, book_type):
         chapters = extract_chapters_structural_reform(content)
     elif book_type == 'game_book':
         chapters = extract_chapters_game_book(content)
+    elif book_type == 'deliberate_practice':
+        chapters = extract_chapters_deliberate_practice(content)
+    elif book_type == 'qing_yu_nian':
+        chapters = extract_chapters_qing_yu_nian(content)
     else:
         print(f"错误：不支持的书籍类型 {book_type}")
         return []
@@ -322,8 +455,8 @@ def process_book(input_file, output_dir, book_type):
     
     # 创建章节文件
     created_files = []
-    for chapter in chapters:
-        filename = create_chapter_file(chapter, output_dir, book_type)
+    for index, chapter in enumerate(chapters):
+        filename = create_chapter_file(chapter, output_dir, book_type, chapter_index=index)
         created_files.append(filename)
     
     print(f"\n处理完成！共创建了 {len(created_files)} 个文件：")
@@ -349,6 +482,16 @@ def main():
             'input_file': Path("books/结构性改革.md"),
             'output_dir': Path("my-website/docs/结构性改革"),
             'book_type': 'structural_reform'
+        },
+        {
+            'input_file': Path("books/刻意练习：如何从新手到大师.md"),
+            'output_dir': Path("my-website/docs/刻意练习"),
+            'book_type': 'deliberate_practice'
+        },
+        {
+            'input_file': Path("books/庆余年.md"),
+            'output_dir': Path("my-website/docs/庆余年"),
+            'book_type': 'qing_yu_nian'
         }
     ]
     
