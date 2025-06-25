@@ -10,7 +10,6 @@
 """
 
 import re
-import os
 from pathlib import Path
 
 def clean_image_references(content):
@@ -245,26 +244,47 @@ def extract_chapters_deliberate_practice(content):
 
 def extract_chapters_qing_yu_nian(content):
     """
-    提取庆余年的章节内容
+    提取庆余年的章节内容，按卷分组
     """
-    chapters = []
+    chapters_by_volume = {}
 
+    # 匹配卷标题的正则表达式 - 匹配 # 第X卷 格式
+    volume_pattern = r'^# (第.*?卷)'
     # 匹配章节标题的正则表达式 - 匹配 ## 第X章 格式
     chapter_pattern = r'^## (第.*?章[^#\n]*)'
 
     # 分割内容
     lines = content.split('\n')
+    current_volume = None
     current_chapter = None
     current_content = []
 
     for line in lines:
+        # 检查是否是卷标题
+        volume_match = re.match(volume_pattern, line)
         # 检查是否是章节标题
         chapter_match = re.match(chapter_pattern, line)
 
-        if chapter_match:
+        if volume_match:
             # 保存上一章内容
-            if current_chapter:
-                chapters.append({
+            if current_chapter and current_volume:
+                if current_volume not in chapters_by_volume:
+                    chapters_by_volume[current_volume] = []
+                chapters_by_volume[current_volume].append({
+                    'title': current_chapter,
+                    'content': '\n'.join(current_content)
+                })
+
+            # 开始新卷
+            current_volume = volume_match.group(1)
+            current_chapter = None
+            current_content = []
+        elif chapter_match:
+            # 保存上一章内容
+            if current_chapter and current_volume:
+                if current_volume not in chapters_by_volume:
+                    chapters_by_volume[current_volume] = []
+                chapters_by_volume[current_volume].append({
                     'title': current_chapter,
                     'content': '\n'.join(current_content)
                 })
@@ -277,55 +297,15 @@ def extract_chapters_qing_yu_nian(content):
                 current_content.append(line)
 
     # 保存最后一章
-    if current_chapter:
-        chapters.append({
+    if current_chapter and current_volume:
+        if current_volume not in chapters_by_volume:
+            chapters_by_volume[current_volume] = []
+        chapters_by_volume[current_volume].append({
             'title': current_chapter,
             'content': '\n'.join(current_content)
         })
 
-    return chapters
-
-def extract_chapters_qing_yu_nian(content):
-    """
-    提取庆余年的章节内容
-    """
-    chapters = []
-
-    # 匹配章节标题的正则表达式 - 匹配 ## 第X章 格式
-    chapter_pattern = r'^## (第.*?章[^#\n]*)'
-
-    # 分割内容
-    lines = content.split('\n')
-    current_chapter = None
-    current_content = []
-
-    for line in lines:
-        # 检查是否是章节标题
-        chapter_match = re.match(chapter_pattern, line)
-
-        if chapter_match:
-            # 保存上一章内容
-            if current_chapter:
-                chapters.append({
-                    'title': current_chapter,
-                    'content': '\n'.join(current_content)
-                })
-
-            # 开始新章节
-            current_chapter = chapter_match.group(1)
-            current_content = [line]  # 包含章节标题
-        else:
-            if current_chapter:
-                current_content.append(line)
-
-    # 保存最后一章
-    if current_chapter:
-        chapters.append({
-            'title': current_chapter,
-            'content': '\n'.join(current_content)
-        })
-
-    return chapters
+    return chapters_by_volume
 
 def generate_sidebar_position_chinese(chapter_num):
     """
@@ -368,7 +348,7 @@ def generate_sidebar_position_arabic(chapter_num):
     
     return 1
 
-def create_chapter_file(chapter, output_dir, book_type, chapter_index=None):
+def create_chapter_file(chapter, output_dir, book_type, chapter_index=None, volume_dir=None):
     """
     创建章节文件
     """
@@ -382,6 +362,12 @@ def create_chapter_file(chapter, output_dir, book_type, chapter_index=None):
     filename = re.sub(r'[^\w\s-]', '', title).strip()
     filename = re.sub(r'[-\s]+', '-', filename)
     filename = f"{filename}.md"
+
+    # 确定输出目录
+    if volume_dir:
+        final_output_dir = volume_dir
+    else:
+        final_output_dir = output_dir
 
     # 生成侧边栏位置
     if chapter_index is not None:
@@ -398,16 +384,16 @@ sidebar_position: {sidebar_position}
 ---
 
 """
-    
+
     # 组合最终内容
     final_content = frontmatter + cleaned_content
-    
+
     # 写入文件
-    file_path = output_dir / filename
+    file_path = final_output_dir / filename
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(final_content)
-    
-    print(f"已创建: {filename}")
+
+    print(f"已创建: {file_path}")
     return filename
 
 def process_book(input_file, output_dir, book_type):
@@ -417,10 +403,10 @@ def process_book(input_file, output_dir, book_type):
     print(f"\n开始处理文件: {input_file}")
     print(f"输出目录: {output_dir}")
     print(f"书籍类型: {book_type}")
-    
+
     # 创建输出目录
     output_dir.mkdir(exist_ok=True)
-    
+
     # 读取原文件
     try:
         with open(input_file, 'r', encoding='utf-8') as f:
@@ -431,40 +417,83 @@ def process_book(input_file, output_dir, book_type):
     except Exception as e:
         print(f"错误：读取文件失败 - {e}")
         return []
-    
+
     # 根据书籍类型提取章节
     if book_type == 'dongfin_politics':
         chapters = extract_chapters_dongfin_politics(content)
+        return process_regular_chapters(chapters, output_dir, book_type)
     elif book_type == 'structural_reform':
         chapters = extract_chapters_structural_reform(content)
+        return process_regular_chapters(chapters, output_dir, book_type)
     elif book_type == 'game_book':
         chapters = extract_chapters_game_book(content)
+        return process_regular_chapters(chapters, output_dir, book_type)
     elif book_type == 'deliberate_practice':
         chapters = extract_chapters_deliberate_practice(content)
+        return process_regular_chapters(chapters, output_dir, book_type)
     elif book_type == 'qing_yu_nian':
-        chapters = extract_chapters_qing_yu_nian(content)
+        chapters_by_volume = extract_chapters_qing_yu_nian(content)
+        return process_qing_yu_nian_chapters(chapters_by_volume, output_dir, book_type)
     else:
         print(f"错误：不支持的书籍类型 {book_type}")
         return []
-    
+
+def process_regular_chapters(chapters, output_dir, book_type):
+    """
+    处理普通章节结构的书籍
+    """
     if not chapters:
         print("警告：没有找到任何章节")
         return []
-    
+
     print(f"找到 {len(chapters)} 个章节")
-    
+
     # 创建章节文件
     created_files = []
     for index, chapter in enumerate(chapters):
         filename = create_chapter_file(chapter, output_dir, book_type, chapter_index=index)
         created_files.append(filename)
-    
+
     print(f"\n处理完成！共创建了 {len(created_files)} 个文件：")
     for filename in created_files:
         print(f"  - {filename}")
-    
+
     print(f"\n所有文件已保存到: {output_dir}")
-    
+
+    return created_files
+
+def process_qing_yu_nian_chapters(chapters_by_volume, output_dir, book_type):
+    """
+    处理庆余年按卷分组的章节结构
+    """
+    if not chapters_by_volume:
+        print("警告：没有找到任何卷或章节")
+        return []
+
+    total_chapters = sum(len(chapters) for chapters in chapters_by_volume.values())
+    print(f"找到 {len(chapters_by_volume)} 卷，共 {total_chapters} 个章节")
+
+    created_files = []
+
+    # 按卷处理
+    for volume_index, (volume_title, chapters) in enumerate(chapters_by_volume.items()):
+        print(f"\n处理 {volume_title}，包含 {len(chapters)} 个章节")
+
+        # 创建卷的文件夹
+        volume_folder_name = re.sub(r'[^\w\s-]', '', volume_title).strip()
+        volume_folder_name = re.sub(r'[-\s]+', '-', volume_folder_name)
+        volume_dir = output_dir / volume_folder_name
+        volume_dir.mkdir(exist_ok=True)
+
+        # 创建该卷的章节文件
+        for chapter_index, chapter in enumerate(chapters):
+            filename = create_chapter_file(chapter, output_dir, book_type,
+                                         chapter_index=chapter_index, volume_dir=volume_dir)
+            created_files.append(f"{volume_folder_name}/{filename}")
+
+    print(f"\n处理完成！共创建了 {len(created_files)} 个文件")
+    print(f"按卷组织在: {output_dir}")
+
     return created_files
 
 def main():
