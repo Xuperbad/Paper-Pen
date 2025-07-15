@@ -128,6 +128,44 @@ const config = {
         onUntruncatedBlogPosts: 'warn',
       },
     ],
+    [
+      '@docusaurus/plugin-content-blog',
+      {
+        id: 'fuxi',
+        path: 'fuxi',
+        routeBasePath: 'fuxi',
+        showReadingTime: true,
+        blogSidebarTitle: '复习资料',
+        blogSidebarCount: 'ALL',
+        feedOptions: {
+          type: ['rss', 'atom'],
+          xslt: true,
+        },
+        editUrl: 'https://github.com/Xuperbad/Paper-Pen/tree/main/my-website/',
+        onInlineTags: 'warn',
+        onInlineAuthors: 'warn',
+        onUntruncatedBlogPosts: 'warn',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-blog',
+      {
+        id: 'zhenti',
+        path: 'zhenti',
+        routeBasePath: 'zhenti',
+        showReadingTime: true,
+        blogSidebarTitle: '真题练习',
+        blogSidebarCount: 'ALL',
+        feedOptions: {
+          type: ['rss', 'atom'],
+          xslt: true,
+        },
+        editUrl: 'https://github.com/Xuperbad/Paper-Pen/tree/main/my-website/',
+        onInlineTags: 'warn',
+        onInlineAuthors: 'warn',
+        onUntruncatedBlogPosts: 'warn',
+      },
+    ],
   ],
 
   themes: ['@docusaurus/theme-mermaid'],
@@ -188,6 +226,8 @@ const config = {
           //   position: 'right',
           // },
           {to: '/zhejiang', label: '💙Zhejiang', position: 'left'},
+          {to: '/fuxi', label: '💜fuxi', position: 'left'},
+          {to: '/zhenti', label: '🖤zhenti', position: 'left'},
         ],
       },
       footer: {
