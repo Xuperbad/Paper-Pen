@@ -109,6 +109,25 @@ const config = {
         rehypePlugins: [require('rehype-katex')],
       },
     ],
+    [
+      '@docusaurus/plugin-content-blog',
+      {
+        id: 'zhejiang',
+        path: 'zhejiang',
+        routeBasePath: 'zhejiang',
+        showReadingTime: true,
+        blogSidebarTitle: '浙江宣传',
+        blogSidebarCount: 'ALL',
+        feedOptions: {
+          type: ['rss', 'atom'],
+          xslt: true,
+        },
+        editUrl: 'https://github.com/Xuperbad/Paper-Pen/tree/main/my-website/',
+        onInlineTags: 'warn',
+        onInlineAuthors: 'warn',
+        onUntruncatedBlogPosts: 'warn',
+      },
+    ],
   ],
 
   themes: ['@docusaurus/theme-mermaid'],
@@ -136,7 +155,7 @@ const config = {
       navbar: {
         title: 'Paper-Pen',
         logo: {
-          alt: 'My Site Logo',
+          alt: 'Paper and Pen',
           src: 'img/logo.svg',
         },
         items: [
@@ -144,30 +163,31 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: '🔋Books',
+            label: '❤️Books',
           },
           {
             type: 'docSidebar',
             sidebarId: 'historySidebar',
             position: 'left',
-            label: '🥽History',
+            label: '🧡History',
             docsPluginId: 'history',
           },
+          {
+            type: 'docSidebar',
+            sidebarId: 'notesSidebar',
+            position: 'left',
+            label: '💛Notes',
+            docsPluginId: 'notes',
+          },
+          {to: '/blog', label: '💚Articles', position: 'left'},
           //暂时关闭Showcase功能
-          {to: '/blog', label: '✍🏻Articles', position: 'left'},
           // {to: '/showcase', label: 'Showcase', position: 'left'},
           // {
           //   href: 'https://github.com/Xuperbad/Paper-Pen',
           //   label: 'GitHub',
           //   position: 'right',
           // },
-          {
-            type: 'docSidebar',
-            sidebarId: 'notesSidebar',
-            position: 'left',
-            label: '📕Notes',
-            docsPluginId: 'notes',
-          },
+          {to: '/zhejiang', label: '💙Zhejiang', position: 'left'},
         ],
       },
       footer: {
