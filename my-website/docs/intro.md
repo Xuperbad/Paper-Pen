@@ -2,46 +2,62 @@
 sidebar_position: 1
 ---
 
-# 总览
+# Markdown语法速查
 
-Let's discover **Docusaurus in less than 5 minutes**.
+## 基本语法
 
-## Getting Started
+| 元素     | Markdown 语法                                                |
+| -------- | ------------------------------------------------------------ |
+| 标题     | `# H1` <br/> `## H2` <br/> `### H3`                          |
+| 粗体     | `**bold text**`                                              |
+| 斜体     | `*italicized text*`                                          |
+| 引用块   | `> blockquote`                                               |
+| 有序列表 | `1. First item` <br/> `2. Second item` <br/> `3. Third item` |
+| 无序列表 | `- First item` <br/> `- Second item` <br/> `- Third item`    |
+| 代码     | `` `code` ``                                                 |
+| 分隔线   | `---`                                                        |
+| 链接     | `[title](https://www.example.com)`                           |
+| 图片     | `![alt text](example.jpg)`                                   |
 
-Get started by **creating a new site**.
+## 进阶语法
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+1. 表格
 
-### What you'll need
+| Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+2. 代码块
 
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
+```
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "age": 25
+}
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+3. 脚注：
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+Here's a sentence with a footnote. [^1]
+[^1]: This is the footnote.
 
-## Start your site
+4. 标题编号：
 
-Run the development server:
+`### My Great Heading {#custom-id}`
 
-```bash
-cd my-website
-npm run start
-```
+5. 定义列表：
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+term
+: definition
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+6. 删除线
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+~~The world is flat.~~
+
+7. 任务列表
+
+- [x] Write the press release
+- [ ] Update the website
+- [ ] Contact the media
