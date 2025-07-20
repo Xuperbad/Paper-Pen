@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-python process_md_files.py "./my-website/docs/庆余年/第一卷"
+python process_md_files.py add "./my-website/docs/庆余年/第一卷"
+python process_md_files.py remove "./my-website/docs/庆余年/第一卷"
 Markdown文档处理脚本
-功能：为指定文件夹内的所有md文档添加sidebar_position配置
+功能：为指定文件夹内的所有md文档添加或删除sidebar_position配置
 """
 
-import os
 import re
 import sys
 from pathlib import Path
@@ -160,7 +160,7 @@ def has_sidebar_position(content):
     lines = content.split('\n')
     
     # 检查前5行是否包含sidebar_position
-    for i, line in enumerate(lines[:5]):
+    for line in lines[:5]:
         if 'sidebar_position' in line:
             return True
         # 如果遇到非空行且不是---，说明不是frontmatter格式
@@ -173,11 +173,11 @@ def has_sidebar_position(content):
 def add_sidebar_position(content, position):
     """
     在文档开头添加sidebar_position配置
-    
+
     Args:
         content: 原文件内容
         position: 章节位置号
-    
+
     Returns:
         str: 处理后的内容
     """
@@ -186,7 +186,7 @@ sidebar_position: {position}
 ---
 
 """
-    
+
     # 如果文档已经有frontmatter，需要合并
     lines = content.split('\n')
     if lines and lines[0].strip() == '---':
@@ -196,99 +196,195 @@ sidebar_position: {position}
             if lines[i].strip() == '---':
                 end_index = i
                 break
-        
+
         if end_index > 0:
             # 已有frontmatter，在其中添加sidebar_position
             existing_frontmatter = lines[1:end_index]
             has_sidebar = any('sidebar_position' in line for line in existing_frontmatter)
-            
+
             if not has_sidebar:
                 existing_frontmatter.insert(0, f'sidebar_position: {position}')
                 new_content = '---\n' + '\n'.join(existing_frontmatter) + '\n---\n' + '\n'.join(lines[end_index+1:])
                 return new_content
             else:
                 return content  # 已有sidebar_position，不修改
-    
+
     # 没有frontmatter，直接添加
     return frontmatter + content
 
 
-def process_md_files(folder_path):
+def remove_sidebar_position(content):
+    """
+    从文档中删除sidebar_position配置
+
+    Args:
+        content: 原文件内容
+
+    Returns:
+        tuple: (处理后的内容, 是否找到并删除了sidebar_position)
+    """
+    lines = content.split('\n')
+
+    # 检查是否有frontmatter
+    if not lines or lines[0].strip() != '---':
+        return content, False
+
+    # 查找frontmatter结束位置
+    end_index = -1
+    for i in range(1, min(len(lines), 20)):  # 最多检查前20行
+        if lines[i].strip() == '---':
+            end_index = i
+            break
+
+    if end_index <= 0:
+        return content, False
+
+    # 提取frontmatter内容
+    frontmatter_lines = lines[1:end_index]
+    remaining_content = lines[end_index+1:]
+
+    # 查找并删除sidebar_position行
+    new_frontmatter_lines = []
+    found_sidebar_position = False
+
+    for line in frontmatter_lines:
+        if 'sidebar_position' in line and ':' in line:
+            found_sidebar_position = True
+            continue  # 跳过这一行，即删除它
+        new_frontmatter_lines.append(line)
+
+    if not found_sidebar_position:
+        return content, False
+
+    # 重新组装内容
+    if new_frontmatter_lines:
+        # 还有其他frontmatter配置，保留frontmatter结构
+        new_content = '---\n' + '\n'.join(new_frontmatter_lines) + '\n---\n' + '\n'.join(remaining_content)
+    else:
+        # frontmatter为空，完全删除frontmatter结构
+        new_content = '\n'.join(remaining_content)
+        # 删除开头的空行
+        new_content = new_content.lstrip('\n')
+
+    return new_content, True
+
+
+def process_md_files(folder_path, action='add'):
     """
     处理指定文件夹中的所有md文件
-    
+
     Args:
         folder_path: 目标文件夹路径
+        action: 操作类型，'add' 为添加sidebar_position，'remove' 为删除sidebar_position
     """
     folder = Path(folder_path)
-    
+
     if not folder.exists():
         print(f"错误：文件夹 '{folder_path}' 不存在")
         return
-    
+
     if not folder.is_dir():
         print(f"错误：'{folder_path}' 不是一个文件夹")
         return
-    
+
     # 查找所有md文件
     md_files = list(folder.glob('*.md'))
-    
+
     if not md_files:
         print(f"在文件夹 '{folder_path}' 中没有找到md文件")
         return
-    
-    print(f"找到 {len(md_files)} 个md文件")
+
+    action_desc = "添加" if action == 'add' else "删除"
+    print(f"找到 {len(md_files)} 个md文件，准备{action_desc}sidebar_position配置")
     print("-" * 50)
-    
+
     processed_count = 0
     skipped_count = 0
-    
+
     for md_file in md_files:
         try:
             # 读取文件内容
             with open(md_file, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
-            # 检查是否已有sidebar_position
-            if has_sidebar_position(content):
-                print(f"跳过：{md_file.name} (已包含sidebar_position)")
-                skipped_count += 1
-                continue
-            
-            # 提取章节号
-            chapter_num = extract_chapter_number(md_file.name, content)
-            
-            if chapter_num is None:
-                print(f"警告：无法从 '{md_file.name}' 中提取章节号，跳过处理")
-                skipped_count += 1
-                continue
-            
-            # 添加sidebar_position
-            new_content = add_sidebar_position(content, chapter_num)
-            
-            # 写回文件
-            with open(md_file, 'w', encoding='utf-8') as f:
-                f.write(new_content)
-            
-            print(f"处理完成：{md_file.name} -> sidebar_position: {chapter_num}")
-            processed_count += 1
-            
+
+            if action == 'add':
+                # 添加sidebar_position
+                # 检查是否已有sidebar_position
+                if has_sidebar_position(content):
+                    print(f"跳过：{md_file.name} (已包含sidebar_position)")
+                    skipped_count += 1
+                    continue
+
+                # 提取章节号
+                chapter_num = extract_chapter_number(md_file.name, content)
+
+                if chapter_num is None:
+                    print(f"警告：无法从 '{md_file.name}' 中提取章节号，跳过处理")
+                    skipped_count += 1
+                    continue
+
+                # 添加sidebar_position
+                new_content = add_sidebar_position(content, chapter_num)
+
+                # 写回文件
+                with open(md_file, 'w', encoding='utf-8') as f:
+                    f.write(new_content)
+
+                print(f"处理完成：{md_file.name} -> 添加 sidebar_position: {chapter_num}")
+                processed_count += 1
+
+            elif action == 'remove':
+                # 删除sidebar_position
+                new_content, found = remove_sidebar_position(content)
+
+                if not found:
+                    print(f"跳过：{md_file.name} (未找到sidebar_position)")
+                    skipped_count += 1
+                    continue
+
+                # 写回文件
+                with open(md_file, 'w', encoding='utf-8') as f:
+                    f.write(new_content)
+
+                print(f"处理完成：{md_file.name} -> 删除 sidebar_position")
+                processed_count += 1
+
         except Exception as e:
             print(f"处理文件 '{md_file.name}' 时出错：{e}")
-    
+
     print("-" * 50)
-    print(f"处理完成！共处理 {processed_count} 个文件，跳过 {skipped_count} 个文件")
+    print(f"处理完成！共{action_desc} {processed_count} 个文件，跳过 {skipped_count} 个文件")
 
 
 def main():
     """主函数"""
-    if len(sys.argv) != 2:
-        print("使用方法：python process_md_files.py <文件夹路径>")
-        print("示例：python process_md_files.py ./my-website/docs/南明史")
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("使用方法：")
+        print("  添加sidebar_position：python process_md_files.py add <文件夹路径>")
+        print("  删除sidebar_position：python process_md_files.py remove <文件夹路径>")
+        print("  兼容旧版本（默认添加）：python process_md_files.py <文件夹路径>")
+        print()
+        print("示例：")
+        print("  python process_md_files.py add ./my-website/docs/南明史")
+        print("  python process_md_files.py remove ./my-website/docs/南明史")
+        print("  python process_md_files.py ./my-website/docs/南明史")
         return
-    
-    folder_path = sys.argv[1]
-    process_md_files(folder_path)
+
+    # 解析命令行参数
+    if len(sys.argv) == 2:
+        # 兼容旧版本，默认为添加操作
+        action = 'add'
+        folder_path = sys.argv[1]
+    else:
+        # 新版本，指定操作类型
+        action = sys.argv[1].lower()
+        folder_path = sys.argv[2]
+
+        if action not in ['add', 'remove']:
+            print(f"错误：不支持的操作 '{action}'，请使用 'add' 或 'remove'")
+            return
+
+    process_md_files(folder_path, action)
 
 
 if __name__ == "__main__":
