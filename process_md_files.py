@@ -14,7 +14,7 @@ from pathlib import Path
 
 def chinese_to_arabic(chinese_num):
     """
-    将中文数字转换为阿拉伯数字
+    将中文数字转换为阿拉伯数字，支持到万位
 
     Args:
         chinese_num: 中文数字字符串
@@ -24,34 +24,60 @@ def chinese_to_arabic(chinese_num):
     """
     chinese_digits = {
         '零': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
-        '六': 6, '七': 7, '八': 8, '九': 9, '十': 10,
+        '六': 6, '七': 7, '八': 8, '九': 9,
         '〇': 0, '壹': 1, '贰': 2, '叁': 3, '肆': 4, '伍': 5,
-        '陆': 6, '柒': 7, '捌': 8, '玖': 9, '拾': 10
+        '陆': 6, '柒': 7, '捌': 8, '玖': 9
+    }
+
+    chinese_units = {
+        '十': 10, '拾': 10,
+        '百': 100, '佰': 100,
+        '千': 1000, '仟': 1000,
+        '万': 10000, '萬': 10000
     }
 
     # 处理简单的一位数
     if len(chinese_num) == 1 and chinese_num in chinese_digits:
         return chinese_digits[chinese_num]
 
-    # 处理十位数：十、一十、二十等
-    if '十' in chinese_num or '拾' in chinese_num:
-        if chinese_num == '十' or chinese_num == '拾':
-            return 10
-        elif chinese_num.startswith('十') or chinese_num.startswith('拾'):
-            # 十一、十二等
-            return 10 + chinese_digits.get(chinese_num[1], 0)
-        elif chinese_num.endswith('十') or chinese_num.endswith('拾'):
-            # 二十、三十等
-            return chinese_digits.get(chinese_num[0], 0) * 10
-        else:
-            # 二十一、三十五等
-            parts = chinese_num.replace('拾', '十').split('十')
-            if len(parts) == 2:
-                tens = chinese_digits.get(parts[0], 0) * 10
-                ones = chinese_digits.get(parts[1], 0)
-                return tens + ones
+    # 标准化处理：统一使用简体字
+    chinese_num = chinese_num.replace('拾', '十').replace('佰', '百').replace('仟', '千').replace('萬', '万')
 
-    return None
+    # 特殊情况：单独的"十"
+    if chinese_num == '十':
+        return 10
+
+    # 处理复杂的中文数字
+    result = 0
+    temp_num = 0
+
+    i = 0
+    while i < len(chinese_num):
+        char = chinese_num[i]
+
+        if char in chinese_digits:
+            temp_num = chinese_digits[char]
+        elif char in chinese_units:
+            unit_value = chinese_units[char]
+
+            if unit_value == 10000:  # 万
+                result += temp_num * unit_value
+                temp_num = 0
+            elif unit_value >= 10:  # 十、百、千
+                if temp_num == 0:  # 处理"十"开头的情况，如"十一"
+                    temp_num = 1
+                result += temp_num * unit_value
+                temp_num = 0
+        elif char == '零':
+            # 零不影响计算，跳过
+            pass
+
+        i += 1
+
+    # 加上最后的个位数
+    result += temp_num
+
+    return result if result > 0 else None
 
 
 def extract_chapter_number(filename, content):
@@ -78,10 +104,10 @@ def extract_chapter_number(filename, content):
         r'(\d+)节'
     ]
 
-    # 中文数字模式
+    # 中文数字模式（支持百、千、万）
     chinese_patterns = [
-        r'第([零一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾〇]+)章',
-        r'第([零一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾〇]+)节'
+        r'第([零一二三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟萬〇]+)章',
+        r'第([零一二三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟萬〇]+)节'
     ]
 
     # 先尝试阿拉伯数字模式
