@@ -182,7 +182,7 @@ const config = {
 
   scripts: [
     {
-      src: '/js/password-protection.js',
+      src: process.env.NODE_ENV === 'development' ? '/js/password-protection.js' : '/Paper-Pen/js/password-protection.js',
       async: false,
     },
   ],
