@@ -180,6 +180,13 @@ const config = {
     },
   ],
 
+  scripts: [
+    {
+      src: '/js/password-protection.js',
+      async: false,
+    },
+  ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
