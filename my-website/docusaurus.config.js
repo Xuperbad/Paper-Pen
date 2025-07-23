@@ -180,6 +180,13 @@ const config = {
     },
   ],
 
+  scripts: [
+    {
+      src: process.env.NODE_ENV === 'development' ? '/js/password-protection.js' : '/Paper-Pen/js/password-protection.js',
+      async: false,
+    },
+  ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
