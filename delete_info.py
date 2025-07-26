@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 python delete_info.py my-website/docs/南明史
-删除markdown文件中的:::info 笔记结构
+删除markdown文件中的:::info 笔记结构和YAML front matter
 删除功能：
-1. 删除 :::info 笔记 ... ::: 整个结构
-2. 删除该结构，并保持格式美观
+1. 删除文件开头的YAML front matter（--- 包围的部分）
+2. 删除 :::info 笔记 ... ::: 整个结构
+3. 删除相关空行，确保处理后首行是原文的第一个标题
+4. 保持格式美观
 """
 
 import os
@@ -14,23 +16,38 @@ from pathlib import Path
 
 
 def delete_info_blocks(file_path):
-    """删除单个markdown文件中的:::info 笔记结构"""
+    """删除单个markdown文件中的:::info 笔记结构和YAML front matter"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        
+
         cleaned_lines = []
         i = 0
-        
+
+        # 检查并删除开头的YAML front matter
+        if i < len(lines) and lines[i].strip() == '---':
+            # 跳过第一个 ---
+            i += 1
+            # 跳过 front matter 内容直到找到结束的 ---
+            while i < len(lines):
+                if lines[i].strip() == '---':
+                    i += 1  # 跳过结束的 ---
+                    break
+                i += 1
+
+            # 跳过 front matter 后面的空行
+            while i < len(lines) and lines[i].strip() == '':
+                i += 1
+
         while i < len(lines):
             line = lines[i].strip()
-            
+
             # 检测:::info 笔记的开始
             if line.startswith(':::info') and '笔记' in line:
                 # 删除该行前面的空行
                 while cleaned_lines and cleaned_lines[-1].strip() == '':
                     cleaned_lines.pop()
-                
+
                 # 跳过:::info块内容，直到找到结束的:::
                 i += 1
                 while i < len(lines):
@@ -38,20 +55,24 @@ def delete_info_blocks(file_path):
                         i += 1  # 跳过结束的:::行
                         break
                     i += 1
-                
+
                 continue
-            
+
             # 保留其他内容
             cleaned_lines.append(lines[i])
             i += 1
-        
+
+        # 确保第一行不是空行（如果有内容的话）
+        while cleaned_lines and cleaned_lines[0].strip() == '':
+            cleaned_lines.pop(0)
+
         # 写回文件
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(cleaned_lines)
-        
+
         print(f"✓ 已处理文件: {file_path}")
         return True
-        
+
     except Exception as e:
         print(f"✗ 处理文件失败 {file_path}: {e}")
         return False
@@ -87,7 +108,7 @@ def process_directory(directory_path):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='删除markdown文件中的:::info 笔记结构')
+    parser = argparse.ArgumentParser(description='删除markdown文件中的:::info 笔记结构和YAML front matter')
     parser.add_argument('path', help='要处理的文件或目录路径')
     parser.add_argument('--backup', '-b', action='store_true', help='处理前创建备份')
     
