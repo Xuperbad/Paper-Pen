@@ -138,6 +138,38 @@ sidebar_position: 1
    7. [写好申论分析_Report](./报告/写好申论分析_Report.md)
    8. [常见美术风格_Report](./报告/常见美术风格.md)
 
+## 草稿
+
+**如何vibe coding**
+
+1. 先讨论清楚，最后写代码
+   1. **使劲写prompt，越多越清楚**
+   2. 从一个【核心文件】开始理解我们当下的【整个|部分】，并列出项目与文件结构
+   3. 写具体功能时，先和agent讨论清楚
+      1. ```我们现在来做【功能】
+      背景：【为什么要做这个需求】
+      用户流程：【无需一上来就定义具体的功能或者程序文件，让agent先理解用户要怎么用】
+         1.用户从...开始...
+         2.然后...
+         3.最后...
+         4.同时...
+      请注意：【一些开发要求】
+         异常管理
+         极端情况
+         性能优化
+         代码格式：【可以配置格式文件】
+      想清楚如何 最好的基于目前的项目结构来实现这个功能，并输出你的文件、函数结构规划，然后我们再开始写代码```
+2. 定义好配置文件，经常性地更新开发文档
+   1. 充分利用CLAUDE.md、README.md等
+   2. 新建一个自定义的DOCUMENTATION.md
+      ```让我们来总结一下【功能|今天】的程序并为了未来查询来更新开发文档
+      理解当前的开发文档格式，并详细更新它```
+3. 用例子来引导它写对或修改bug
+   1. 如果用户...，我们就要...
+   2. 或者引导它参考知名的案例
+
+---
+
 ## 暂存
 
 1. [Awesome GPT-4o Images ✨
@@ -232,166 +264,3 @@ sidebar_position: 1
 93. [从技能设计复杂度及定位谈被动技能](https://www.gameres.com/328718.html)
 94. [游戏策划必备技能：以《杀戮尖塔》为例，从零开始拆解](https://www.gameres.com/901469.html)
 95. [想让自己的游戏不一样、更好玩怎么办？其实很简单](https://www.gameres.com/906505.html)
-
----
-
-当然可以！这是一个非常经典且实用的AI API应用场景。要高效、稳定地完成这个任务，关键在于**自动化脚本**和**流程优化**。
-
-下面我为你分解这个过程，从核心思路、详细步骤、代码示例到优化建议，让你能做得又快又好。
-
-### 核心思路
-
-整个流程的核心是一个循环脚本，它会自动执行以下操作：
-
-1.  **读取**一个Markdown（.md）文件。
-2.  将文件内容**嵌入**到一个预设好的提示词（Prompt）模板中。
-3.  **调用** Gemini API，将拼接好的完整提示词发送过去。
-4.  **接收** AI 生成的结果。
-5.  将结果**保存**为一个新的文件，或者覆盖原文件。
-6.  **重复**以上步骤，直到处理完所有文件。
-
------
-
-### 详细步骤与代码示例
-
-我们将使用Python来编写这个自动化脚本，因为它的库支持非常完善，代码也清晰易懂。
-
-#### 第1步：准备工作
-
-1.  **获取API密钥**：访问 [Google AI Studio](https://ai.google.dev/)，登录并获取你的API密钥。
-2.  **安装Python库**：在你的电脑上打开终端或命令行，运行以下命令来安装Google的官方SDK。
-    ```bash
-    pip install google-generativeai
-    ```
-3.  **整理文件**：创建一个项目文件夹，并在里面建立两个子文件夹：
-      * `input_markdowns`：用于存放所有你想要处理的原始.md文件。
-      * `output_results`：用于存放AI处理后生成的新文件。
-
-#### 第2步：编写Python脚本
-
-在你的项目文件夹中，创建一个名为 `batch_process.py` 的Python文件，然后将下面的代码复制进去。
-
-```python
-import google.generativeai as genai
-import os
-import time
-
-# --- 1. 配置 ---
-# 在这里填入你的API密钥
-API_KEY = 'YOUR_API_KEY' 
-genai.configure(api_key=API_KEY)
-
-# 选择要使用的模型
-model = genai.GenerativeModel('gemini-1.5-pro-latest')
-
-# 定义输入和输出文件夹
-input_folder = 'input_markdowns'
-output_folder = 'output_results'
-
-# 确保输出文件夹存在
-os.makedirs(output_folder, exist_ok=True)
-
-# --- 2. 定义你的核心提示词模板 ---
-# 这是最关键的一步！你需要在这里精心设计你的指令。
-# 使用 f-string 的 {markdown_content} 作为占位符，脚本会自动填入文件内容。
-prompt_template = f"""
-请你扮演一名专业的技术文章编辑。
-你的任务是阅读以下这篇Markdown格式的文章，并根据以下要求进行优化和总结：
-
-1.  **生成一个简短的摘要**：不超过200字，总结文章的核心观点。
-2.  **提取3-5个关键词**：用于SEO和文章分类。
-3.  **格式化输出**：请严格按照下面的格式返回结果，不要添加任何额外的解释性文字。
-
-摘要：
-[这里是摘要内容]
-
-关键词：
-[关键词1, 关键词2, 关键词3]
-
----
-以下是原始文章内容：
----
-
-{markdown_content}
-"""
-
-# --- 3. 循环处理所有文件 ---
-# 获取输入文件夹下所有的.md文件
-files_to_process = [f for f in os.listdir(input_folder) if f.endswith('.md')]
-
-print(f"总共找到 {len(files_to_process)} 个Markdown文件准备处理。")
-
-for filename in files_to_process:
-    input_filepath = os.path.join(input_folder, filename)
-    output_filepath = os.path.join(output_folder, filename)
-
-    print(f"正在处理: {filename} ...")
-
-    try:
-        # 读取Markdown文件内容
-        with open(input_filepath, 'r', encoding='utf-8') as f:
-            markdown_text = f.read()
-
-        # 将文件内容填入提示词模板
-        full_prompt = prompt_template.format(markdown_content=markdown_text)
-
-        # 调用API
-        response = model.generate_content(full_prompt)
-
-        # 将AI生成的结果写入新文件
-        with open(output_filepath, 'w', encoding='utf-8') as f:
-            f.write(response.text)
-
-        print(f"处理完成: {filename} -> 已保存到 output_results 文件夹。")
-
-    except Exception as e:
-        # 如果任何一个文件处理失败，打印错误并继续处理下一个
-        print(f"处理文件 {filename} 时发生错误: {e}")
-    
-    # 为了防止触发API的速率限制，每次调用后暂停一秒
-    time.sleep(1)
-
-print("\n所有文件处理完毕！")
-
-```
-
-#### 第3步：运行脚本
-
-1.  将你的所有.md文件放入 `input_markdowns` 文件夹。
-2.  打开终端，进入你的项目文件夹。
-3.  运行脚本：
-    ```bash
-    python batch_process.py
-    ```
-
-脚本会自动处理所有文件，处理后的结果会以相同的文件名出现在 `output_results` 文件夹中。
-
------
-
-### 怎样做得更好？关键优化点
-
-上面的脚本是基础版，要让它更强大、更可靠，可以从以下几个方面入手：
-
-1.  **错误处理与日志记录**：
-
-      * 上面的代码已经包含了基础的 `try...except` 结构，这能保证单个文件的失败不会中断整个流程。
-      * **进阶**：你可以将失败的文件名和错误原因记录到一个单独的日志文件（如 `error_log.txt`）中，方便后续排查。
-
-2.  **成本与速率控制**：
-
-      * **测试为王**：在处理大量文件前，先用2-3个有代表性的文件测试你的提示词，确保效果满意。这可以避免浪费大量的API调用费用。
-      * **速率限制**：API有每分钟请求次数的限制。代码中的 `time.sleep(1)` 是一个简单有效的预防措施。如果你的请求量非常大，需要查阅Google的官方文档了解具体的速率限制。
-
-3.  **并行处理（进阶）**：
-
-      * 如果文件数量巨大（成千上万），串行处理会很慢。你可以使用Python的 `asyncio` 或 `multiprocessing` 库来发起并行的API请求，极大地提高处理速度。但这会增加代码的复杂度。对于几百个文件的规模，串行通常足够了。
-
-4.  **结果验证**：
-
-      * AI的返回结果有时可能不稳定（比如返回了空内容或错误格式）。你可以在保存文件前增加一个简单的检查步骤，例如检查返回的文本是否包含“摘要：”和“关键词：”这两个标志，如果不包含，就视为处理失败并记录下来。
-
-5.  **优化提示词（Prompt Engineering）**：
-
-      * 这是决定最终效果的核心。你可以通过“少量样本提示 (Few-shot Prompting)”来提升效果。即在你的提示词里，先给AI一两个“输入/输出”的完美范例，然后再给出它需要处理的实际内容。这能让AI更好地理解你想要的格式和标准。
-
-遵循以上方法，你就可以构建一个非常强大和个性化的内容处理流水线了。
